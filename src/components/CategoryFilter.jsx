@@ -10,7 +10,7 @@ function CategoryFilter() {
 
   // ดึงข้อมูล Category ที่ไม่ซ้ำกันจาก Backend
   useEffect(() => {
-    fetch('http://localhost:5000/api/categories') // สมมติว่ามี API นี้ (ต้องไปสร้างที่ backend)
+    fetch('fetch(`${import.meta.env.VITE_API_URL}/api/services`)/api/categories') // สมมติว่ามี API นี้ (ต้องไปสร้างที่ backend)
       .then(res => res.json())
       .then(data => setCategories(data))
       .catch(err => console.error("Could not fetch categories", err));

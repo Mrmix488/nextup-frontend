@@ -1,4 +1,4 @@
-// frontend/src/pages/CategoryPage.jsx
+// frontend/src/pages/CategoryPage.jsx (วางทับทั้งหมด)
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -15,68 +15,53 @@ const subCategoryImages = {
 };
 const fallbackImage = 'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?w=500&q=80';
 
+
 function CategoryPage() {
   const { categoryName } = useParams();
   const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // --- แก้ไขตรงนี้ ---
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/services?category=${encodeURIComponent(categoryName)}`;
+    
     setLoading(true);
-    fetch(`http://localhost:5000/api/services?category=${encodeURIComponent(categoryName)}`)
+    fetch(apiUrl)
       .then(res => res.json())
       .then(data => {
-        const uniqueSubCats = [...new Set(
-          data.map(s => s.subcategory).filter(Boolean)
-        )];
+        const uniqueSubCats = [...new Set(data.map(s => s.subcategory).filter(Boolean))];
         setSubCategories(uniqueSubCats);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching subcategories:', err);
         setLoading(false);
       });
   }, [categoryName]);
 
-  if (loading) {
-    return (
-      <div className="container">
-        <p>กำลังโหลดข้อมูล...</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="container"><p>กำลังโหลดข้อมูล...</p></div>;
 
   return (
     <div className="container">
-      <nav className="breadcrumb">
-        <Link to="/">หน้าแรก</Link> &nbsp;/&nbsp;
+      <div className="breadcrumb">
+        <Link to="/">หน้าแรก</Link> / 
         <span>{categoryName}</span>
-      </nav>
-
+      </div>
       <h1>เลือกประเภทในหมวด "{categoryName}"</h1>
-
+      
       {subCategories.length > 0 ? (
         <div className="subcategory-showcase-grid">
-          {subCategories.map(subCat => {
-            const imgSrc = subCategoryImages[subCat] || fallbackImage;
-
-            return (
-              <Link
-                to={`/category/${encodeURIComponent(categoryName)}/${encodeURIComponent(subCat)}`}
-                key={subCat}
-                className="subcategory-showcase-card with-image"
-              >
-                <img
-                  src={imgSrc}
-                  alt={subCat}
-                  className="card-bg-image"
-                  loading="lazy"
-                  onError={e => { e.target.src = fallbackImage }}
-                />
-                <div className="card-overlay" />
-                <h3>{subCat}</h3>
-              </Link>
-            );
-          })}
+          {subCategories.map(subCat => (
+            <Link 
+              to={`/category/${encodeURIComponent(categoryName)}/${encodeURIComponent(subCat)}`} 
+              key={subCat} 
+              className="subcategory-showcase-card with-image"
+            >
+              <img 
+                src={subCategoryImages[subCat] || fallbackImage} 
+                alt={subCat} 
+                className="card-bg-image" 
+              />
+              <div className="card-overlay"></div>
+              <h3>{subCat}</h3>
+            </Link>
+          ))}
         </div>
       ) : (
         <p>ยังไม่มีหมวดหมู่ย่อยในหมวดนี้</p>

@@ -22,14 +22,18 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/categories')
-      .then(res => res.json())
+    // --- แก้ไขตรงนี้ ---
+    fetch(`${import.meta.env.VITE_API_URL}/api/categories`)
+      .then(res => {
+        if (!res.ok) { throw new Error('Network response was not ok'); }
+        return res.json();
+      })
       .then(data => {
         setCategories(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Could not fetch categories", err);
+        console.error("Could not fetch categories:", err);
         setLoading(false);
       });
   }, []);

@@ -19,7 +19,7 @@ function SubCategoryPage() {
 
   useEffect(() => {
     
-    const apiUrl = `http://localhost:5000/api/services?category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(subCategoryName)}`;
+    const apiUrl = `import.meta.env.VITE_API_URL/api/services?category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(subCategoryName)}`;
     
     
     setLoading(true);
