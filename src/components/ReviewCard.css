@@ -1,0 +1,14 @@
+.review-card {
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.review-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.review-author-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.review-author-info { flex-grow: 1; }
+.review-author-name { margin: 0; font-weight: 600; }
+.review-stars { display: flex; gap: 0.1rem; }
+.review-comment { margin: 0 0 1rem 0; color: #374151; }
+.review-date { margin: 0; font-size: 0.8rem; color: #9ca3af; text-align: right; }

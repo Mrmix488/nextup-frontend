@@ -1,0 +1,21 @@
+.service-card-mini {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.service-card-mini:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+.service-mini-image { width: 100%; height: 140px; object-fit: cover; }
+.service-mini-content { padding: 1rem; }
+.service-mini-title { font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-mini-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; }
+.service-mini-rating { display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem; }
+.review-count-mini { color: #6b7280; margin-left: 0.25rem; }
+.service-mini-price { margin: 0; font-weight: bold; font-size: 1.1rem; }
