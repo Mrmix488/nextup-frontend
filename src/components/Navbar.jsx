@@ -43,7 +43,7 @@ function Navbar({ currentUser }) {
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
           {/* --- แก้ไขตรงนี้ --- */}
-          <img src={`${import.meta.env.BASE_URL}FFS.png`} alt="NextUp Logo" className="navbar-logo-img" />
+          <img src={`${import.meta.env.BASE_URL}NextUp.png`} alt="NextUp Logo" className="navbar-logo-img" />
           <span>NextUp</span>
         </Link>
 
