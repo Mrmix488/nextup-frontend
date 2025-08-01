@@ -1,13 +1,13 @@
-
+// frontend/src/components/Navbar.jsx (เวอร์ชันแก้ไข Path รูป)
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '../firebase'; 
-import './Navbar.css'; 
+import { auth, db } from '../firebase';
+import './Navbar.css';
 
-const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; 
+const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; // <-- อย่าลืมใส่ UID แอดมินของน้อง
 
 function Navbar({ currentUser }) {
   const navigate = useNavigate();
@@ -15,8 +15,7 @@ function Navbar({ currentUser }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setUserData(null);
-    setLoading(true);
+    setUserData(null); setLoading(true);
     if (currentUser) {
       const userRef = doc(db, 'users', currentUser.uid);
       const unsubscribe = onSnapshot(userRef, (docSnap) => {
@@ -32,11 +31,8 @@ function Navbar({ currentUser }) {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      await signOut(auth);
-      navigate('/');
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
+      await signOut(auth); navigate('/');
+    } catch (error) { console.error("Error signing out: ", error); }
   };
 
   const userRole = userData?.role;
@@ -46,7 +42,8 @@ function Navbar({ currentUser }) {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          <img src="/NextUp.png" alt="Logo" className="navbar-logo-img" />
+          {/* --- แก้ไขตรงนี้ --- */}
+          <img src={`${import.meta.env.BASE_URL}FFS.png`} alt="NextUp Logo" className="navbar-logo-img" />
           <span>NextUp</span>
         </Link>
 
@@ -58,10 +55,9 @@ function Navbar({ currentUser }) {
             <Link to="/admin" className="navbar-link admin-link">แผงควบคุมแอดมิน</Link>
           )}
         </div>
-
         <div className="navbar-menu">
           {currentUser ? (
-            loading ? ( <p style={{ fontSize: '0.9rem' }}>...</p> ) : (
+            loading ? (<p>...</p>) : (
               <div className="profile-menu">
                 {userRole === 'client' && <Link to="/post-job" className="navbar-button post-job">ประกาศงาน</Link>}
                 {userRole === 'freelancer' && <Link to="/post-service" className="navbar-button post-service">สร้างบริการ</Link>}
