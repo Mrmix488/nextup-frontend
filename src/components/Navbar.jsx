@@ -6,6 +6,7 @@ import { signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import './Navbar.css';
+import logo from '/NextUp.png'; // <-- 1. Import รูปเข้ามาเป็นตัวแปร
 
 const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; // <-- อย่าลืมใส่ UID แอดมินของน้อง
 
@@ -38,12 +39,12 @@ function Navbar({ currentUser }) {
   const userRole = userData?.role;
   const isAdmin = currentUser && currentUser.uid === ADMIN_UID;
 
-  return (
+   return (
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          {/* --- แก้ไขตรงนี้ --- */}
-          <img src={`${import.meta.env.BASE_URL}NextUp.png`} alt="NextUp Logo" className="navbar-logo-img" />
+          {/* --- 2. ใช้ตัวแปร logo ที่ import มา --- */}
+          <img src={logo} alt="NextUp Logo" className="navbar-logo-img" />
           <span>NextUp</span>
         </Link>
 

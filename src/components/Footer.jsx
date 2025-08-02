@@ -3,17 +3,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
+import logo from '/NextUp.png'; // <-- 1. Import รูปเข้ามาเป็นตัวแปร
 
 function Footer() {
   const currentYear = new Date().getFullYear();
 
-  return (
+   return (
     <footer className="site-footer">
       <div className="footer-container">
         <div className="footer-column about-section">
           <div className="footer-logo">
-            {/* --- แก้ไขตรงนี้ --- */}
-            <img src={`${import.meta.env.BASE_URL}NextUp.png`} alt="NextUp Logo" />
+            {/* --- 2. ใช้ตัวแปร logo ที่ import มา --- */}
+            <img src={logo} alt="NextUp Logo" />
             <span>NextUp</span>
           </div>
           <p>

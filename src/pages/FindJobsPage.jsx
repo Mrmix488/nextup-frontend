@@ -1,19 +1,16 @@
-
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import JobCard from '../components/JobCard'; 
+import JobCard from '../components/JobCard';
 
 function FindJobsPage() {
   const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  
   useEffect(() => {
-    setLoading(true); 
+    setLoading(true);
     const jobsRef = collection(db, "jobs");
     const q = query(
       jobsRef, 
@@ -25,46 +22,23 @@ function FindJobsPage() {
       (querySnapshot) => {
         const jobsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAllJobs(jobsData);
-        setLoading(false); 
+        setLoading(false); // <-- จุดที่ 1: หยุดโหลดเมื่อได้รับข้อมูล
       },
       (error) => {
         console.error("Error fetching jobs:", error);
-        setLoading(false); 
+        setLoading(false); // <-- จุดที่ 2: หยุดโหลดเสมอแม้จะเกิด Error
       }
     );
 
     return () => unsubscribe();
   }, []);
 
-  const filteredJobs = useMemo(() => {
-    if (!searchTerm) {
-      return allJobs;
-    }
-    const lowercasedTerm = searchTerm.toLowerCase();
-    return allJobs.filter(job => {
-      const titleMatch = job.title.toLowerCase().includes(lowercasedTerm);
-      const descriptionMatch = job.description.toLowerCase().includes(lowercasedTerm);
-      return titleMatch || descriptionMatch;
-    });
-  }, [allJobs, searchTerm]);
-
+  const filteredJobs = useMemo(() => { /* ...เหมือนเดิม... */ }, [allJobs, searchTerm]);
 
   return (
     <>
       <div className="search-hero">
-        <div className="container">
-          <h1>ค้นหางานที่ใช่สำหรับคุณ</h1>
-          <p>จากโปรเจกต์ทั้งหมดที่กำลังมองหาฟรีแลนซ์ฝีมือดี</p>
-          <form className="search-form" onSubmit={(e) => e.preventDefault()}>
-            <input 
-              type="text" 
-              className="search-input"
-              placeholder="ลองค้นหา 'ออกแบบโลโก้', 'ติวคณิต'..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </form>
-        </div>
+        {/* ... Hero Section เหมือนเดิม ... */}
       </div>
       
       <div className="container">
@@ -72,7 +46,7 @@ function FindJobsPage() {
           <h2>
             {searchTerm ? `ผลการค้นหาสำหรับ "${searchTerm}"` : 'ประกาศล่าสุด'}
           </h2>
-          {/* --- นี่คือส่วนที่แก้ไข! --- */}
+          {/* --- แก้ไขส่วนนี้! --- */}
           {loading ? (
             <p>กำลังโหลดรายการงาน...</p>
           ) : filteredJobs.length > 0 ? (
