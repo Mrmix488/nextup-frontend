@@ -15,17 +15,21 @@ const categoryImages = {
 };
 const fallbackImage = 'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?w=500&q=80';
 
-// ... โค้ดที่เหลือเหมือนเดิม ...
-
 function HomePage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // --- แก้ไขตรงนี้ ---
-    fetch(`${import.meta.env.VITE_API_URL}/api/categories`)
+    // --- นี่คือบรรทัดที่แก้ไขให้ถูกต้อง 100% ---
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/categories`;
+    console.log("Fetching categories from:", apiUrl); // เพิ่ม console.log เพื่อตรวจสอบ
+
+    fetch(apiUrl)
       .then(res => {
-        if (!res.ok) { throw new Error('Network response was not ok'); }
+        if (!res.ok) { 
+          // ถ้า Server ตอบกลับมาไม่สำเร็จ (เช่น 404, 500)
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         return res.json();
       })
       .then(data => {
@@ -37,6 +41,7 @@ function HomePage() {
         setLoading(false);
       });
   }, []);
+
 
   if (loading) return <div className="container"><p>กำลังโหลดหมวดหมู่...</p></div>;
 
