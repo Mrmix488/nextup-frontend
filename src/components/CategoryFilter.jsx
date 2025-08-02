@@ -5,15 +5,30 @@ import { Link, useLocation } from 'react-router-dom';
 import './CategoryFilter.css';
 
 function CategoryFilter() {
-  const [categories, setCategories] = useState([]);
-  const location = useLocation();
+   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // ดึงข้อมูล Category ที่ไม่ซ้ำกันจาก Backend
   useEffect(() => {
-    fetch('fetch(`${import.meta.env.VITE_API_URL}/api/services`)/api/categories') // สมมติว่ามี API นี้ (ต้องไปสร้างที่ backend)
-      .then(res => res.json())
-      .then(data => setCategories(data))
-      .catch(err => console.error("Could not fetch categories", err));
+    // --- นี่คือบรรทัดที่แก้ไขให้ถูกต้อง 100% ---
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/categories`;
+    console.log("Fetching categories from:", apiUrl); // เพิ่ม console.log เพื่อตรวจสอบ
+
+    fetch(apiUrl)
+      .then(res => {
+        if (!res.ok) { 
+          // ถ้า Server ตอบกลับมาไม่สำเร็จ (เช่น 404, 500)
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        setCategories(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Could not fetch categories:", err);
+        setLoading(false);
+      });
   }, []);
 
   // หา category ที่ active อยู่จาก URL

@@ -6,26 +6,31 @@ import { db, auth } from '../firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 
 function ServiceDetailPage() {
-  const { id } = useParams();
-  const [service, setService] = useState(null);
+   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const currentUser = auth.currentUser;
-  const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
-    // --- แก้ไขตรงนี้ ---
-    fetch(`${import.meta.env.VITE_API_URL}/api/services/${id}`)
-      .then(res => res.json())
+    // --- นี่คือบรรทัดที่แก้ไขให้ถูกต้อง 100% ---
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/categories`;
+    console.log("Fetching categories from:", apiUrl); // เพิ่ม console.log เพื่อตรวจสอบ
+
+    fetch(apiUrl)
+      .then(res => {
+        if (!res.ok) { 
+          // ถ้า Server ตอบกลับมาไม่สำเร็จ (เช่น 404, 500)
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        setService(data);
+        setCategories(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Error fetching service details:", err);
+        console.error("Could not fetch categories:", err);
         setLoading(false);
       });
-  }, [id]);
+  }, []);
 
   const handleStartChat = async () => {
     // ... (โค้ดส่วนนี้จะเหมือนกับใน JobDetailPage ซึ่งตอนนี้ยังไม่มี)
