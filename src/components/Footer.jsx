@@ -3,7 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
-import logo from '/NextUp.png'; // <-- 1. Import รูปเข้ามาเป็นตัวแปร
+import logo from '/NexTUp.png'; // <-- 1. Import รูปเข้ามาเป็นตัวแปร
 
 function Footer() {
   const currentYear = new Date().getFullYear();

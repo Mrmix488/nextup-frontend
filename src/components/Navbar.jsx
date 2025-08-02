@@ -1,14 +1,13 @@
-// frontend/src/components/Navbar.jsx (เวอร์ชันแก้ไข Path รูป)
-
+// frontend/src/components/Navbar.jsx (วางทับทั้งหมด)
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import './Navbar.css';
-import logo from '/NextUp.png'; // <-- 1. Import รูปเข้ามาเป็นตัวแปร
+import logo from '/NexTUp.png'; // <-- Import รูป
 
-const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; // <-- อย่าลืมใส่ UID แอดมินของน้อง
+const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; // <-- อย่าลืมแก้ UID
 
 function Navbar({ currentUser }) {
   const navigate = useNavigate();
@@ -39,15 +38,13 @@ function Navbar({ currentUser }) {
   const userRole = userData?.role;
   const isAdmin = currentUser && currentUser.uid === ADMIN_UID;
 
-   return (
+  return (
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          {/* --- 2. ใช้ตัวแปร logo ที่ import มา --- */}
           <img src={logo} alt="NextUp Logo" className="navbar-logo-img" />
           <span>NextUp</span>
         </Link>
-
         <div className="navbar-links">
           {(!currentUser || userRole === 'freelancer') && (
             <Link to="/find-jobs" className="navbar-link">ค้นหางาน</Link>
