@@ -7,8 +7,8 @@ const subCategoryImages = {
   "คณิตศาสตร์": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=500&q=80",
   "ภาษาอังกฤษ": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500&q=80",
   "กราฟิกดีไซน์": "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=500&q=80",
-  "วาดการ์ตูน": "https://artprojectsforkids.org/wp-content/uploads/2024/07/How-to-draw-a-Minion.jpg",
-  "3D Model": "https://img.freepik.com/premium-photo/3d-illustration-cartoon-character-artist-working-his-studio_1057-139643.jpg",
+  "วาดการ์ตูน": "https://images.unsplash.com/photo-1589793463343-05b978254b4a?w=500&q=80",
+  "3D Model": "https://images.unsplash.com/photo-1628522644216-912b7a845eaa?w=500&q=80",
   "ดนตรี": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&q=80",
   "ภาษาญี่ปุ่น": "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=500&q=80",
   "พัฒนาเว็บไซต์": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&q=80",
@@ -22,20 +22,29 @@ function CategoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // --- แก้ไขตรงนี้ ---
     const apiUrl = `${import.meta.env.VITE_API_URL}/api/services?category=${encodeURIComponent(categoryName)}`;
-    
     setLoading(true);
+    
     fetch(apiUrl)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Network response failed');
+        return res.json();
+      })
       .then(data => {
         const uniqueSubCats = [...new Set(data.map(s => s.subcategory).filter(Boolean))];
         setSubCategories(uniqueSubCats);
-        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Error fetching subcategories:", error);
+      })
+      .finally(() => {
+        setLoading(false); // <-- ทำให้แน่ใจว่า setLoading(false) จะทำงานเสมอ
       });
   }, [categoryName]);
 
-  if (loading) return <div className="container"><p>กำลังโหลดข้อมูล...</p></div>;
+  if (loading) {
+    return <div className="container"><p>กำลังโหลดประเภทในหมวด "{categoryName}"...</p></div>;
+  }
 
   return (
     <div className="container">
