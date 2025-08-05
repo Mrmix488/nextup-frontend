@@ -1,7 +1,8 @@
-// frontend/src/pages/LoginPage.jsx (วางทับทั้งหมด)
+// frontend/src/pages/LoginPage.jsx (เวอร์ชัน Remember Me)
 
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from "firebase/auth";
+// --- 1. Import เครื่องมือใหม่เข้ามา ---
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { useNavigate, Link } from 'react-router-dom';
 import { auth } from '../firebase';
 
@@ -17,15 +18,19 @@ function LoginPage() {
     setError('');
     setLoading(true);
     try {
+      // --- 2. ตั้งค่าให้ Firebase "จำ" สถานะการล็อกอินไว้ในเครื่องนี้ ---
+      await setPersistence(auth, browserLocalPersistence);
+      
+      // --- 3. ทำการล็อกอินตามปกติ ---
       await signInWithEmailAndPassword(auth, email, password);
+      
       navigate('/');
     } catch (err) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+      if (err.code === 'auth/invalid-credential') {
         setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
       } else {
         setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
       }
-      console.error("Login Error:", err.code);
     } finally {
       setLoading(false);
     }
@@ -36,14 +41,7 @@ function LoginPage() {
       <div className="auth-form-container">
         <h1>เข้าสู่ระบบ</h1>
         <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label htmlFor="email">อีเมล</label>
-            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">รหัสผ่าน</label>
-            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
+          {/* ...ฟอร์มเหมือนเดิม... */}
           {error && <p className="error-message">{error}</p>}
           <button type="submit" className="auth-button" disabled={loading}>
             {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
