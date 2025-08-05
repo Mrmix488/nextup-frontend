@@ -7,7 +7,7 @@ import { auth, db } from '../firebase';
 import './Navbar.css';
 import logo from '/NexTUp.png'; // <-- Import รูป
 
-const ADMIN_UID = "fYtDKu8UZhVTGAjRDyyb79NJwlf2"; // <-- อย่าลืมแก้ UID
+const ADMIN_UID = "H2rpbsSy8bfjUq6uMaoxGvHHI7G3"; // <-- อย่าลืมแก้ UID
 
 function Navbar({ currentUser }) {
   const navigate = useNavigate();
