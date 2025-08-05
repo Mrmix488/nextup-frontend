@@ -17,19 +17,15 @@ function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      // --- 2. ตั้งค่าให้ Firebase "จำ" สถานะการล็อกอินไว้ในเครื่องนี้ ---
-      await setPersistence(auth, browserLocalPersistence);
-      
-      // --- 3. ทำการล็อกอินตามปกติ ---
       await signInWithEmailAndPassword(auth, email, password);
-      
       navigate('/');
     } catch (err) {
-      if (err.code === 'auth/invalid-credential') {
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
         setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
       } else {
         setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
       }
+      console.error("Login Error:", err.code);
     } finally {
       setLoading(false);
     }
