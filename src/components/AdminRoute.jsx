@@ -1,20 +1,19 @@
-
+// frontend/src/components/AdminRoute.jsx (วางทับทั้งหมด)
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { auth } from '../firebase';
-
-
-const ADMIN_UID = "QiP4ghf9ktT79LOH0FUy6lDCchk1"; 
+import { useAuth } from '../context/AuthContext'; // <-- Import useAuth
 
 function AdminRoute({ children }) {
-  const currentUser = auth.currentUser;
+  const { userData, loading } = useAuth(); // <-- ดึงข้อมูลจากศูนย์กลาง
 
-  
-  if (!currentUser || currentUser.uid !== ADMIN_UID) {
-    return <Navigate to="/" replace />;
+  if (loading) {
+    return <div>กำลังตรวจสอบสิทธิ์...</div>;
   }
 
-  return children; 
-}
+  if (userData?.role === 'admin') {
+    return children;
+  }
 
+  return <Navigate to="/" replace />;
+}
 export default AdminRoute;

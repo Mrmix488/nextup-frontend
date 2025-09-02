@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useAuth } from './context/AuthContext';
 
-// Import Components & Pages...
+// --- Import Components ---
 import Navbar from './components/Navbar';
 import CategoryFilter from './components/CategoryFilter';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+
+// --- Import Pages ---
 import HomePage from './pages/HomePage';
 import ServiceDetailPage from './pages/ServiceDetailPage';
 import CategoryPage from './pages/CategoryPage';
@@ -35,12 +36,13 @@ import HowToUsePage from './pages/HowToUsePage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 
-// --- สร้าง Component ใหม่ขึ้นมาเพื่อจัดการ Layout ---
-function AppLayout({ currentUser }) {
+
+// --- สร้าง Component Layout ใหม่ ---
+function AppLayout() {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // เงื่อนไขในการแสดง CategoryFilter
+  // เงื่อนไข: จะแสดง CategoryFilter ก็ต่อเมื่ออยู่ที่หน้าแรก (/)
   const showCategoryFilter = location.pathname === '/';
 
   // Logic การดักจับ Scroll
@@ -55,7 +57,7 @@ function AppLayout({ currentUser }) {
   return (
     <div className="site-wrapper creative-background">
       <header className={`sticky-header ${isScrolled ? 'scrolled' : ''}`}>
-        <Navbar currentUser={currentUser} />
+        <Navbar />
         {showCategoryFilter && <CategoryFilter />}
       </header>
       <main>
@@ -98,24 +100,26 @@ function AppLayout({ currentUser }) {
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { loading } = useAuth(); // ดึงแค่ loading จากศูนย์กลางข้อมูล
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-  
+  // แสดงหน้า "กำลังโหลด..." ขณะที่ AuthContext กำลังตรวจสอบผู้ใช้งาน
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><p>กำลังตรวจสอบผู้ใช้งาน...</p></div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontFamily: 'Kanit, sans-serif'
+      }}>
+        <p>กำลังตรวจสอบผู้ใช้งาน...</p>
+      </div>
+    );
   }
 
   return (
     <Router>
-      <AppLayout currentUser={currentUser} />
+      <AppLayout />
     </Router>
   );
 }
