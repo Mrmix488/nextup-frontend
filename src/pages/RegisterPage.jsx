@@ -1,5 +1,4 @@
-
-
+// frontend/src/pages/RegisterPage.jsx (วางทับทั้งหมด)
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -11,45 +10,40 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [role, setRole] = useState('client'); 
+  const [role, setRole] = useState('client');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("รหัสผ่านไม่ตรงกัน");
-      return;
-    }
+    if (password !== confirmPassword) { setError("รหัสผ่านไม่ตรงกัน"); return; }
+    if (displayName.trim() === '') { setError("กรุณาใส่ชื่อที่แสดง"); return; }
     setError('');
+    setLoading(true);
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      
+      // สร้างโปรไฟล์ใน Firestore ทันที
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
         displayName: displayName,
-        role: role, 
+        role: role,
         photoURL: `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(displayName)}`,
         createdAt: serverTimestamp(),
         ...(role === 'freelancer' && {
-          bio: "",
-          skills: [],
-          rating: 0,
-          reviewCount: 0
+          bio: "", skills: [], rating: 0, reviewCount: 0
         })
       });
-
       navigate('/');
     } catch (err) {
-      if (err.code === 'auth/email-already-in-use') {
-        setError('อีเมลนี้ถูกใช้งานแล้ว');
-      } else {
-        setError('เกิดข้อผิดพลาดในการสมัครสมาชิก');
-      }
+      if (err.code === 'auth/email-already-in-use') setError('อีเมลนี้ถูกใช้งานแล้ว');
+      else setError('เกิดข้อผิดพลาดในการสมัครสมาชิก');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,7 +52,6 @@ function RegisterPage() {
       <div className="auth-form-container">
         <h1>สร้างบัญชีใหม่</h1>
         <form onSubmit={handleRegister}>
-          {/* ...ฟอร์มเหมือนเดิมทุกอย่าง... */}
           <div className="form-group">
             <label htmlFor="displayName">ชื่อที่แสดง</label>
             <input type="text" id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
@@ -68,7 +61,7 @@ function RegisterPage() {
             <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="form-group">
-            <label htmlFor="password">รหัสผ่าน</label>
+            <label htmlFor="password">รหัสผ่าน (6+ ตัวอักษร)</label>
             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" />
           </div>
           <div className="form-group">
@@ -83,7 +76,9 @@ function RegisterPage() {
             </div>
           </div>
           {error && <p className="error-message">{error}</p>}
-          <button type="submit" className="auth-button">สมัครสมาชิก</button>
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
+          </button>
         </form>
         <p className="auth-switch">
           มีบัญชีอยู่แล้ว? <Link to="/login">เข้าสู่ระบบที่นี่</Link>
@@ -92,5 +87,4 @@ function RegisterPage() {
     </div>
   );
 }
-
 export default RegisterPage;
