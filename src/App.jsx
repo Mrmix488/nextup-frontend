@@ -1,9 +1,7 @@
-// frontend/src/App.jsx (เวอร์ชันแก้ไขสมบูรณ์ที่สุด)
-
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+// frontend/src/App.jsx (วางทับทั้งหมด)
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-
 // --- Import Components ---
 import Navbar from './components/Navbar';
 import CategoryFilter from './components/CategoryFilter';
@@ -37,15 +35,19 @@ import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 
 
-
-// สร้าง Component ใหม่สำหรับจัดการ Layout และ Routes
-function AppRoutes() {
+// --- สร้าง Component Layout ใหม่ ---
+function AppLayout() {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // เงื่อนไข: จะแสดง CategoryFilter ก็ต่อเมื่ออยู่ที่หน้าแรก (/)
   const showCategoryFilter = location.pathname === '/';
 
+  // Logic การดักจับ Scroll
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -58,7 +60,7 @@ function AppRoutes() {
       </header>
       <main>
         <Routes>
-         {/* Public Routes */}
+          {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -92,10 +94,12 @@ function AppRoutes() {
     </div>
   );
 }
+// --- จบ Component Layout ---
+
 
 
 function App() {
-  const { loading } = useAuth(); // ดึงแค่ loading จากศูนย์กลาง
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -107,9 +111,23 @@ function App() {
 
   return (
     <Router>
-      <AppRoutes /> {/* <-- เรียกใช้ Component ที่มี Routes อยู่ข้างใน */}
+      <div className="site-wrapper">
+        <header className="sticky-header">
+          <Navbar />
+        </header>
+        <main>
+          <Routes>
+            {/* ใส่ Route ทั้งหมดของน้องที่นี่ */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            {/* ... etc ... */}
+            
+            <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }
-
 export default App;
