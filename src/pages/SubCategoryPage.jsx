@@ -1,22 +1,16 @@
-// frontend/src/pages/SubCategoryPage.jsx (เวอร์ชันแก้ไขสมบูรณ์)
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; // <-- เพิ่ม useMemo
 import { useParams, Link } from 'react-router-dom';
 import FilterBar from '../components/FilterBar';
-import Card from '../components/Card'; // <-- Import การ์ดบริการเข้ามา
-import { db } from '../firebase'; // Import db
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore'; // Import เครื่องมือ Firestore
+import Card from '../components/Card';
+import { db } from '../firebase';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 
 function SubCategoryPage() {
   const { categoryName, subCategoryName } = useParams();
 
-  const [allServices, setAllServices] = useState([]);
-  const [filteredServices, setFilteredServices] = useState([]);
-
-  // State สำหรับการกรองราคา
+  const [allServices, setAllServices] = useState([]); // <-- เปลี่ยนชื่อเป็น allServices
   const [minBudget, setMinBudget] = useState('');
   const [maxBudget, setMaxBudget] = useState('');
-
   const [loading, setLoading] = useState(true);
 
   // --- Logic ใหม่: ดึงข้อมูลจาก Firestore ---
@@ -29,40 +23,39 @@ function SubCategoryPage() {
       servicesRef,
       where("category", "==", categoryName),
       where("subcategory", "==", subCategoryName),
-      where("status", "==", "approved")
+      where("status", "==", "approved"),
+      orderBy("createdAt", "desc") // <-- เพิ่มการเรียงลำดับ
     );
 
     const unsubscribe = onSnapshot(q, 
       (querySnapshot) => {
         const servicesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAllServices(servicesData);
-        setFilteredServices(servicesData); // ตอนแรกให้แสดงทั้งหมด
-        setLoading(false); // <-- หยุดโหลดเมื่อข้อมูลมาถึง
+        setLoading(false); // <-- จุดที่ 1: หยุดโหลดเมื่อได้รับข้อมูล
       },
       (error) => {
         console.error("Error fetching services in subcategory:", error);
-        setLoading(false); // <-- หยุดโหลดเสมอแม้จะเกิด Error
+        setLoading(false); // <-- จุดที่ 2: หยุดโหลดเสมอแม้จะเกิด Error
       }
     );
 
     return () => unsubscribe(); // Cleanup
   }, [categoryName, subCategoryName]);
 
-  // Logic การกรองราคา (เหมือนเดิม)
-  useEffect(() => {
+  // --- Logic การกรองราคา (ใช้ useMemo เพื่อประสิทธิภาพ) ---
+  const filteredServices = useMemo(() => {
     const min = minBudget ? parseFloat(minBudget) : null;
     const max = maxBudget ? parseFloat(maxBudget) : null;
 
     if (min === null && max === null) {
-      setFilteredServices(allServices);
-      return;
+      return allServices; // ถ้าไม่กรอง ให้แสดงทั้งหมด
     }
-    const filtered = allServices.filter(service => {
+    
+    return allServices.filter(service => {
       if (min !== null && service.price < min) return false;
       if (max !== null && service.price > max) return false;
       return true;
     });
-    setFilteredServices(filtered);
   }, [minBudget, maxBudget, allServices]);
 
 
@@ -72,7 +65,6 @@ function SubCategoryPage() {
 
   return (
     <div className="container">
-      {/* Breadcrumb หรือเส้นทางบอกตำแหน่ง */}
       <div className="breadcrumb">
         <Link to="/">หน้าแรก</Link> / 
         <Link to={`/category/${categoryName}`}>{categoryName}</Link> / 
