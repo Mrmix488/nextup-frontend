@@ -1,5 +1,3 @@
-// frontend/src/context/AuthContext.jsx (ไฟล์ใหม่)
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -17,37 +15,37 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // onAuthStateChanged จะคอยดักฟังการเปลี่ยนแปลงสถานะ login/logout
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      // --- เครื่องดักฟังที่ 1: เช็คสถานะ Auth ---
+      console.log("%c[AuthContext] Auth state changed:", "color: purple; font-weight: bold;", user);
       setCurrentUser(user);
       
       if (user) {
-        // ถ้ามี user (login), ให้ไปดักฟังข้อมูลโปรไฟล์ของเขาแบบ real-time
         const userRef = doc(db, 'users', user.uid);
         const unsubscribeProfile = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
+            // --- เครื่องดักฟังที่ 2: เช็คข้อมูลโปรไฟล์ที่ดึงได้ ---
+            console.log("%c[AuthContext] Fetched Firestore profile data:", "color: green; font-weight: bold;", docSnap.data());
             setUserData(docSnap.data());
           } else {
-            setUserData(null); // กรณีที่ user document ถูกลบไป
+            console.error("[AuthContext] User document NOT FOUND in Firestore for UID:", user.uid);
+            setUserData(null);
           }
           setLoading(false);
         });
-        return unsubscribeProfile; // Cleanup profile listener เมื่อ user เปลี่ยน
+        return unsubscribeProfile;
       } else {
-        // ถ้าไม่มี user (logout)
         setUserData(null);
         setLoading(false);
       }
     });
-
-    return unsubscribeAuth; // Cleanup auth listener
+    return unsubscribeAuth;
   }, []);
 
-  const value = {
-    currentUser,
-    userData,
-    loading
-  };
+  const value = { currentUser, userData, loading };
+
+  // --- เครื่องดักฟังที่ 3: เช็คค่าที่จะส่งออกไป ---
+  console.log("[AuthContext] Providing value:", value);
 
   return (
     <AuthContext.Provider value={value}>
