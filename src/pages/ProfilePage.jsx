@@ -1,4 +1,4 @@
-// frontend/src/pages/ProfilePage.jsx (เวอร์ชันแก้ไข Role แอดมิน)
+// frontend/src/pages/ProfilePage.jsx (เวอร์ชันมอบอำนาจแอดมิน)
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -67,7 +67,7 @@ function ProfilePage() {
           {isOwnProfile && <Link to="/profile/edit" className="edit-profile-btn">แก้ไขโปรไฟล์</Link>}
         </div>
 
-        {/* --- แก้ไขเงื่อนไขตรงนี้ด้วย! --- */}
+        {/* --- แก้ไขเงื่อนไขตรงนี้! --- */}
         {(profileData.role === 'freelancer' || profileData.role === 'admin') && (
           <div className="profile-freelancer-details">
             {/* ส่วนแสดงบริการ */}
@@ -89,7 +89,12 @@ function ProfilePage() {
             {/* ส่วน Skills */}
             <div className="profile-section">
               <h2>ทักษะ</h2>
-              {/* ... โค้ดแสดง Skills ... */}
+              <div className="skills-container">
+                {profileData.skills?.length > 0 
+                  ? profileData.skills.map(skill => <span key={skill} className="skill-tag">{skill}</span>)
+                  : <p>ยังไม่มีการระบุทักษะ</p>
+                }
+              </div>
             </div>
             
             {/* ส่วน Reviews */}
