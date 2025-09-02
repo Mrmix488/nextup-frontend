@@ -1,7 +1,8 @@
-// frontend/src/App.jsx (วางทับทั้งหมด)
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// frontend/src/App.jsx
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+
 // --- Import Components ---
 import Navbar from './components/Navbar';
 import CategoryFilter from './components/CategoryFilter';
@@ -34,16 +35,13 @@ import HowToUsePage from './pages/HowToUsePage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 
-
-// --- สร้าง Component Layout ใหม่ ---
+// --- App Layout ---
 function AppLayout() {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // เงื่อนไข: จะแสดง CategoryFilter ก็ต่อเมื่ออยู่ที่หน้าแรก (/)
   const showCategoryFilter = location.pathname === '/';
 
-  // Logic การดักจับ Scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -85,7 +83,7 @@ function AppLayout() {
           <Route path="/post-job" element={<ProtectedRoute><PostJobPage /></ProtectedRoute>} />
           <Route path="/post-service" element={<ProtectedRoute><PostServicePage /></ProtectedRoute>} />
           <Route path="/my-jobs" element={<ProtectedRoute><MyJobsPage /></ProtectedRoute>} />
-          
+
           {/* Admin Route */}
           <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
         </Routes>
@@ -94,10 +92,8 @@ function AppLayout() {
     </div>
   );
 }
-// --- จบ Component Layout ---
 
-
-
+// --- App Root ---
 function App() {
   const { loading } = useAuth();
 
@@ -111,23 +107,9 @@ function App() {
 
   return (
     <Router>
-      <div className="site-wrapper">
-        <header className="sticky-header">
-          <Navbar />
-        </header>
-        <main>
-          <Routes>
-            {/* ใส่ Route ทั้งหมดของน้องที่นี่ */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            {/* ... etc ... */}
-            
-            <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AppLayout />
     </Router>
   );
 }
+
 export default App;
