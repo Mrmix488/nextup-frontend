@@ -1,17 +1,20 @@
-// frontend/src/components/Navbar.jsx (วางทับทั้งหมด)
+// frontend/src/components/Navbar.jsx (เวอร์ชันสมบูรณ์สุดท้ายจริงๆ)
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // <-- Import useAuth
 import './Navbar.css';
 import logo from '/FFS.png';
 
+// --- ย้าย ADMIN_UID มาไว้ข้างนอก และตรวจสอบให้แน่ใจว่าเป็น UID ของน้อง ---
+const ADMIN_UID = "QiP4ghf9ktT79LOH0FUy6lDCchk1";
+
 function Navbar() {
   const navigate = useNavigate();
-  // ดึงข้อมูลทั้งหมดที่จำเป็นมาจากศูนย์กลางข้อมูล (AuthContext)
-  const { currentUser, userData } = useAuth(); 
+  // --- ดึงข้อมูลทั้งหมดที่จำเป็นมาจากศูนย์กลางข้อมูล (AuthContext) ---
+  const { currentUser, userData, loading } = useAuth(); 
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -23,8 +26,10 @@ function Navbar() {
     }
   };
 
+  // --- Logic การตัดสินใจทั้งหมดจะอยู่ที่นี่ ---
   const userRole = userData?.role;
-  const isAdmin = userRole === 'admin';
+  // เราจะใช้การเช็ค 2 ชั้นเพื่อความปลอดภัยสูงสุด
+  const isAdmin = currentUser && currentUser.uid === ADMIN_UID && userRole === 'admin';
 
   return (
     <nav className="navbar">
@@ -38,13 +43,18 @@ function Navbar() {
           {(!currentUser || userRole === 'freelancer') && (
             <Link to="/find-jobs" className="navbar-link">ค้นหางาน</Link>
           )}
+          
+          {/* --- นี่คือเมนูแอดมินที่ต้องกลับมา! --- */}
           {isAdmin && (
             <Link to="/admin" className="navbar-link admin-link">แผงควบคุมแอดมิน</Link>
           )}
         </div>
 
         <div className="navbar-menu">
-          {currentUser ? (
+          {/* --- เราจะใช้ loading จาก useAuth แทน --- */}
+          {loading ? (
+            <p style={{ fontSize: '0.9rem' }}>...</p>
+          ) : currentUser ? (
             <div className="profile-menu">
               {userRole === 'client' && <Link to="/post-job" className="navbar-button post-job">ประกาศงาน</Link>}
               {userRole === 'freelancer' && <Link to="/post-service" className="navbar-button post-service">สร้างบริการ</Link>}
