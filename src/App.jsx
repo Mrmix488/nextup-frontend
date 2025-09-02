@@ -1,4 +1,4 @@
-// frontend/src/App.jsx (วางทับทั้งหมด)
+// frontend/src/App.jsx (เวอร์ชันแก้ไขสมบูรณ์ที่สุด)
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
@@ -37,19 +37,15 @@ import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 
 
-// --- สร้าง Component Layout ใหม่ ---
-function AppLayout() {
+
+// สร้าง Component ใหม่สำหรับจัดการ Layout และ Routes
+function AppRoutes() {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // เงื่อนไข: จะแสดง CategoryFilter ก็ต่อเมื่ออยู่ที่หน้าแรก (/)
   const showCategoryFilter = location.pathname === '/';
 
-  // Logic การดักจับ Scroll
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -62,7 +58,7 @@ function AppLayout() {
       </header>
       <main>
         <Routes>
-          {/* Public Routes */}
+         {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -96,30 +92,22 @@ function AppLayout() {
     </div>
   );
 }
-// --- จบ Component Layout ---
 
 
 function App() {
-  const { loading } = useAuth(); // ดึงแค่ loading จากศูนย์กลางข้อมูล
+  const { loading } = useAuth(); // ดึงแค่ loading จากศูนย์กลาง
 
-  // แสดงหน้า "กำลังโหลด..." ขณะที่ AuthContext กำลังตรวจสอบผู้ใช้งาน
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontFamily: 'Kanit, sans-serif'
-      }}>
-        <p>กำลังตรวจสอบผู้ใช้งาน...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <p>กำลังเริ่มต้น NextUp...</p>
       </div>
     );
   }
 
   return (
     <Router>
-      <AppLayout />
+      <AppRoutes /> {/* <-- เรียกใช้ Component ที่มี Routes อยู่ข้างใน */}
     </Router>
   );
 }
